@@ -3,7 +3,7 @@ const bodyParser=require('body-parser');
 
 var mongoose=require('./db/mongoose.js');
 var Todo=require('./models/todo.js').Todo;
-var User=require('./models/user.js');
+var User=require('./models/user.js').User;
 
 
 var app=express();
@@ -19,6 +19,14 @@ app.post('/todos',(req,res)=>{
         res.status(400).send(err);
     });
     
+});
+
+app.get('/todos',(req,res)=>{
+    Todo.find().then((document)=>{
+        res.send({document});
+    },(err)=>{
+        res.status(400).send(err);
+    });
 });
 
 app.listen(3000,()=>{
