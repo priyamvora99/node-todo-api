@@ -1,3 +1,5 @@
+
+const _=require('lodash');
 const express=require('express');
 const bodyParser=require('body-parser');
 
@@ -53,8 +55,7 @@ app.get('/todos/:id',(req,res)=>{
 },(err)=>{
     console.log(err);
     
-})
-
+});
 
 app.delete('/todos/:id',(req,res)=>{
     var id=req.params.id;
@@ -79,7 +80,34 @@ app.delete('/todos/:id',(req,res)=>{
 },(err)=>{
     console.log(err);
     
-})
+});
+
+app.patch('/todos/:id',(req,res)=>{
+     var id=req.params.id;
+     var body=_.pick(req.body,['text','completed']);
+     if(!(ObjectId.isValid(id))){
+        console.log("in  isValid(id) method");
+
+        res.status(404).send();
+    }
+    if(_.isBoolean(body.completed) && body.completed){
+        body.completedAt=new Date().getTime();
+    }else{
+        body.completed=false;
+        body.completedAt=null;
+    }
+     Todo.findByIdAndUpdate(id,{
+         $set:body
+     },{new:true}).then((doc)=>{
+        if(!doc){
+            res.status(404).send();
+        }
+        res.send(doc);
+     }).catch((err)=>{
+        res.status(400).send();
+     });
+     
+});
 
 app.listen(port,()=>{
     console.log("Listening to port ",port);
